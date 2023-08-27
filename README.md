@@ -17,6 +17,7 @@ After reading in the images, the next step was to build a model to make image pr
 
 ### *Results*  
 The model did not perform as well as I would have liked - coming in around 40 to 45%. I believe that with some more work on the set up and the helper functions, I could get closer to scores above 85%. Part of the results should also be compared to the isolation forest to see how anomaly detection was affecting my code. 
+![Results](Results.png)
 
 
 ### Future Steps  
