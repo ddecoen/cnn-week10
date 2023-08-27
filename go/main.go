@@ -1,9 +1,11 @@
 package main
 
 import (
+	"encoding/csv"
 	"fmt"
 	"math"
 	"math/rand"
+	"os"
 	"time"
 
 	deep "github.com/patrikeh/go-deep"
@@ -72,14 +74,14 @@ func main() {
 
 	neural := deep.NewNeural(&deep.Config{
 		Inputs:     len(trainExamples[0].Input),
-		Layout:     []int{50, 10},
+		Layout:     []int{32, 64, 10},
 		Activation: deep.ActivationReLU,
 		Mode:       deep.ModeMultiClass,
 		Weight:     deep.NewNormal(0.6, 0.1),
 		Bias:       true,
 	})
 
-	trainer := training.NewBatchTrainer(training.NewAdam(0.02, 0.9, 0.999, 1e-8), 1, 200, 8)
+	trainer := training.NewBatchTrainer(training.NewAdam(0.005, 0.9, 0.999, 1e-8), 1, 200, 8)
 
 	// Print the first image
 	fmt.Println("First Train Label: ", train.Labels[0])
@@ -87,7 +89,36 @@ func main() {
 
 	fmt.Printf("training: %d, val: %d, test: %d\n", len(trainExamples), len(testExamples), len(testExamples))
 
-	trainer.Train(neural, trainExamples, testExamples, 500)
+	trainer.Train(neural, trainExamples, testExamples, 5)
+
+	// After trainer.Train(...)
+
+	// Calculate accuracy on test examples
+	testAccuracy := calculateAccuracy(neural, testExamples)
+	fmt.Printf("Test Accuracy: %.2f%%\n", testAccuracy*100)
+
+	// Save accuracy to a CSV file
+	accuracyData := [][]string{
+		{"Test Accuracy", fmt.Sprintf("%.2f%%", testAccuracy*100)},
+	}
+
+	file, err := os.Create("accuracy.csv")
+	if err != nil {
+		panic(err)
+	}
+	defer file.Close()
+
+	writer := csv.NewWriter(file)
+	defer writer.Flush()
+
+	for _, row := range accuracyData {
+		err := writer.Write(row)
+		if err != nil {
+			panic(err)
+		}
+	}
+
+	fmt.Println("Accuracy data saved to accuracy.csv")
 
 	duration := time.Since(startTime)
 	fmt.Printf("Program duration: %s\n", duration)
@@ -130,4 +161,34 @@ func onehot(classes int, val float64) []float64 {
 	res := make([]float64, classes)
 	res[int(val)] = 1
 	return res
+}
+
+func calculateAccuracy(neural *deep.Neural, examples training.Examples) float64 {
+	correctPredictions := 0
+
+	for _, example := range examples {
+		predicted := neural.Predict(example.Input)
+		predictedLabel := maxIndex(predicted)
+		actualLabel := maxIndex(example.Response)
+
+		if predictedLabel == actualLabel {
+			correctPredictions++
+		}
+	}
+
+	return float64(correctPredictions) / float64(len(examples))
+}
+
+func maxIndex(arr []float64) int {
+	maxIdx := 0
+	maxVal := arr[0]
+
+	for i, val := range arr {
+		if val > maxVal {
+			maxVal = val
+			maxIdx = i
+		}
+	}
+
+	return maxIdx
 }
