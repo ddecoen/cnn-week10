@@ -6,6 +6,7 @@ import (
 	"math"
 	"math/rand"
 	"os"
+	"path/filepath"
 	"time"
 
 	deep "github.com/patrikeh/go-deep"
@@ -46,10 +47,23 @@ func printImage(image GoMNIST.RawImage) {
 	}
 }
 func main() {
+	// Get the absolute path of the directory
+	executablePath, err := os.Executable()
+	if err != nil {
+		fmt.Println("Error getting executable path:", err)
+		return
+	}
+
+	// calculate the directory containing the executable
+	executableDir := filepath.Dir(executablePath)
+
 	rand.Seed(999)
 	startTime := time.Now()
 
-	train, test, err := GoMNIST.Load("../data")
+	// Construct the absolute path to the data directory
+	dataDir := filepath.Join(executableDir, "../data")
+
+	train, test, err := GoMNIST.Load(dataDir)
 	if err != nil {
 		panic(err)
 	}
