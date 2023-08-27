@@ -11,6 +11,7 @@ import (
 	deep "github.com/patrikeh/go-deep"
 	"github.com/patrikeh/go-deep/training"
 	"github.com/petar/GoMNIST"
+	//grayscale "github.com/ddecoen/cnn-week10/pkgs"
 )
 
 func printImage(image GoMNIST.RawImage) {
@@ -84,14 +85,12 @@ func main() {
 	trainer := training.NewBatchTrainer(training.NewAdam(0.005, 0.9, 0.999, 1e-8), 1, 200, 8)
 
 	// Print the first image
-	fmt.Println("First Train Label: ", train.Labels[0])
+	fmt.Println("First Train label: ", train.Labels[0])
 	printImage(train.Images[0])
 
 	fmt.Printf("training: %d, val: %d, test: %d\n", len(trainExamples), len(testExamples), len(testExamples))
 
-	trainer.Train(neural, trainExamples, testExamples, 5)
-
-	// After trainer.Train(...)
+	trainer.Train(neural, trainExamples, testExamples, 500)
 
 	// Calculate accuracy on test examples
 	testAccuracy := calculateAccuracy(neural, testExamples)

@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"math"
+
 	"math/rand"
 
 	//"os"
@@ -13,7 +14,7 @@ import (
 )
 
 //This is will leverage GoMNIST package and print the images to the console
-func printImageGS(image GoMNIST.RawImage) {
+func printImage(image GoMNIST.RawImage) {
 	scaleImage := 255.0 / 8.0
 	numRow := 28
 	numCol := 28
@@ -85,7 +86,7 @@ func main() {
 	fmt.Printf("Data shape: %d instances x %d features\n", numInstances, numFeatures)
 
 	fmt.Println("First Train Label: ", train.Labels[0])
-	printImageGS(train.Images[0])
+	printImage(train.Images[0])
 
 	duration := time.Since(startTime)
 	fmt.Printf("Program duration: %s\n", duration)

@@ -1,4 +1,4 @@
-module example.com
+module github.com/ddecoen/cnn-week10/pkgs
 
 go 1.18
 
